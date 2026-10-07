@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار العلوم - الخلية والمجهر</title>
+<style>
+body{font-family:Tahoma,Arial,sans-serif;background:#f5f7fb;margin:0;color:#18202a}
+.wrap{max-width:850px;margin:20px auto;padding:16px}
+.card{background:white;border:1px solid #dfe4ea;border-radius:16px;padding:22px;margin-bottom:16px}
+h1{margin:0 0 8px;font-size:25px}.sub{color:#667085}
+.q{padding:16px 0;border-top:1px solid #eaecf0}.q:first-child{border-top:0}
+.opt{display:block;padding:11px 12px;margin:8px 0;border:1px solid #dfe4ea;border-radius:10px;cursor:pointer}
+.opt:hover{background:#f7f8fa}.opt input{margin-left:8px}
+button{border:0;border-radius:10px;padding:13px 20px;font-size:16px;cursor:pointer;background:#2563eb;color:white}
+button.secondary{background:#64748b}.result{display:none;text-align:center;font-size:19px}
+.good{color:#137333}.bad{color:#b42318}
+input[type=text]{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cfd6df;border-radius:10px;font-size:16px}
+small{color:#667085}
+</style>
+
+<style>
+.feedback-pop{position:fixed;top:18px;right:18px;z-index:9999;padding:12px 16px;border-radius:12px;background:#fff;border:1px solid #dfe4ea;box-shadow:0 4px 18px rgba(0,0,0,.12);font-weight:700}
+.feedback-pop.good{color:#137333}.feedback-pop.bad{color:#b42318}
+</style>
+
+<style>
+.opt.answer-wrong{background:#fee4e2;border-color:#d92d20;color:#b42318}
+.opt.answer-correct{background:#dcfae6;border-color:#12b76a;color:#137333}
+.opt.correct-reveal{background:#dcfae6;border:2px solid #12b76a;color:#137333}
+.correct-label{display:block;margin-top:5px;font-size:13px;font-weight:700;color:#137333}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>اختبار تفاعلي في العلوم</h1>
+    <div class="sub">الصف الثامن الأساسي — موضوع: المجهر والخلية</div>
+    <div class="sub"><strong>المعلمة: بهاء برهم</strong></div>
+    <p>أجيبي عن جميع الأسئلة ثم اضغطي «إظهار النتيجة».</p>
+    <label>اسم الطالبة</label>
+    <input id="student" type="text" placeholder="اكتبي الاسم هنا">
+  </div>
+  <form id="quiz" class="card"></form>
+  <div class="card">
+    <button type="submit" form="quiz">إظهار النتيجة</button>
+    <button type="button" class="secondary" id="reset">إعادة المحاولة</button>
+  </div>
+  <div id="result" class="card result" aria-live="polite"></div>
+</div>
+<script>
+const questions=[
+["أي من الكائنات الحية التالية يمكن رؤيتها بالمجهر المركب في قطرة ماء راكدة؟",["البراميسيوم","القراد","الإسكارس","القمل"],0],
+["بودرة الميثيل سيلولوز تستخدم عند فحص عينة في المجهر بهدف:",["توضيح الصورة","تقليل الحركة","صبغه","تغذية الكائنات الحية"],1],
+["من خصائص مكونات خلايا الدم الحمراء:",["نقل الأكسجين","لا يوجد لها أنوية","كروية محدبة","نقل الغذاء"],1],
+["مجهر عدسته الشيئية 20 والعينية 15، فإن قوة تكبيره:",["35","5","200","300"],3],
+["لفحص الأعضاء الداخلية لحشرة نحل العسل نستخدم المجهر:",["التشريحي","المركب","الإلكتروني","البسيط"],0],
+["العالِمان اللذان وضعا نظرية الخلية هما:",["فلمنج","شلايدن وشوان","شافان","(أ + ج)"],1],
+["تختلف الخلايا عن بعضها البعض في:",["الشكل","الحجم","الوظيفة","جميع ما ذكر صحيح"],3],
+["خاصية انتقال الماء من محلول أقل تركيزًا إلى محلول أكثر تركيزًا تسمى:",["الشعرية","الأسموزي","التوتر السطحي","الانتشار"],1],
+["أحد التالية يوجد في الخلية النباتية ولا يوجد في الخلية الحيوانية:",["الغشاء الخلوي","الجدار الخلوي","النواة","الفجوة العصارية"],1],
+["لتغيير لون الكائن الحي المراد فحصه في المجهر نستخدم صبغة:",["الكارمين","سكر الجلوكوز","الحبر الأحمر","النشا"],0],
+["أي من عضيات الخلية مسؤولة عن هضم وتحليل الخلية في حالة موتها؟",["الميتوكوندريا","النواة","الريبوسومات","الأجسام الحالة"],3],
+["يوجد في خلايا الإنسان عدد من الكروموسومات هو:",["44 كروموسوم","64 كروموسوم","48 كروموسوم","46 كروموسوم"],3],
+["العضية المسؤولة عن تزويد الخلية بالطاقة هي:",["الريبوسومات","الأجسام الحالة","الميتوكوندريا","النواة"],2],
+["يتم تصنيع الريبوسومات في:",["الميتوكوندريا","النواة","الريبوسومات","الأجسام الحالة"],1]
+];
+
+const extraQuestions=[
+  {type:"tf", text:"أول من شاهد واكتشف الخلايا العالم روبرت هوك.", answer:true},
+  {type:"tf", text:"ترتبط الفجوات في الخلايا الحيوانية بقوة بالفضلات.", answer:false},
+  {type:"tf", text:"تتحكم النواة بجميع الأنشطة الحيوية داخل الخلية.", answer:true},
+  {type:"tf", text:"يستخدم المجهر الإلكتروني لرؤية الخلايا بأبعادها الثلاثة.", answer:false},
+  {type:"tf", text:"تنفصل الكروموسومات الشقيقة في الدور الاستوائي من الانقسام المتساوي.", answer:false},
+  {type:"match", text:"صِلي المصطلح بالتعريف المناسب:", pairs:[
+    ["الإنزيمات","بروتينات تساعد على تسريع التفاعلات الكيميائية داخل الخلية"],
+    ["الخاصية الأسموزية","انتقال الماء عبر غشاء شبه منفذ من محلول أقل تركيزًا بالمذاب إلى محلول أكثر تركيزًا بالمذاب"]
+  ]},
+  {type:"match", text:"اختاري العملية التي تصف كل عبارة:", pairs:[
+    ["إنتاج خليتين متماثلتين وراثيًا للنمو وتجديد الخلايا","الانقسام المتساوي"],
+    ["إنتاج خلايا جنسية بنصف عدد الكروموسومات","الانقسام المنصف"],
+    ["يحدث في الخلايا الجسدية","الانقسام المتساوي"],
+    ["يسهم في التنوع الوراثي","الانقسام المنصف"]
+  ]}
+];
+const quiz=document.getElementById("quiz");
+const arabicLetters=['أ','ب','ج','د'];
+const audioCtx = (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null;
+function playTone(correct){
+  if(!audioCtx) return;
+  if(audioCtx.state==="suspended") audioCtx.resume();
+  const osc=audioCtx.createOscillator(), gain=audioCtx.createGain();
+  osc.type="sine";
+  osc.frequency.value=correct?740:220;
+  gain.gain.setValueAtTime(0.0001,audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.12,audioCtx.currentTime+0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.28);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime+0.3);
+}
+function showFeedback(correct){
+  const old=document.querySelector(".feedback-pop"); if(old) old.remove();
+  const el=document.createElement("div");
+  el.className="feedback-pop "+(correct?"good":"bad");
+  el.textContent=correct?"✓ إجابة صحيحة":"✗ إجابة خاطئة";
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1000);
+}
+function checkAndSound(isCorrect, input, correctInput=null){
+  if(input){
+    const questionBox=input.closest(".q");
+    if(questionBox){
+      questionBox.querySelectorAll(".opt").forEach(label=>{
+        label.classList.remove("answer-wrong","answer-correct","correct-reveal");
+        const oldNote=label.querySelector(".correct-label");
+        if(oldNote) oldNote.remove();
+      });
+    }
+    const label=input.closest(".opt");
+    if(label){
+      label.classList.add(isCorrect ? "answer-correct" : "answer-wrong");
+    }
+
+    // إذا كانت الإجابة خاطئة، أظهر للطالبة الإجابة الصحيحة مباشرة.
+    if(!isCorrect && correctInput){
+      const correctLabel=correctInput.closest(".opt");
+      if(correctLabel){
+        correctLabel.classList.add("correct-reveal");
+        const note=document.createElement("span");
+        note.className="correct-label";
+        note.textContent="✓ الإجابة الصحيحة";
+        correctLabel.appendChild(note);
+      }
+    }
+  }
+  playTone(isCorrect); showFeedback(isCorrect);
+}
+
+
+questions.forEach((q,i)=>{
+  const d=document.createElement("div"); d.className="q";
+  d.innerHTML=`<strong>${i+1}. ${q[0]}</strong>`;
+  q[1].forEach((o,j)=>{
+    d.innerHTML+=`<label class="opt"><input required type="radio" name="q${i}" value="${j}"> ${arabicLetters[j]}. ${o}</label>`;
+  });
+  quiz.appendChild(d);
+  d.querySelectorAll(`input[name="q${i}"]`).forEach(input=>{
+    input.addEventListener("change",()=>{
+      const correctInput=d.querySelector(`input[name="q${i}"][value="${q[2]}"]`);
+      checkAndSound(+input.value===q[2], input, correctInput);
+    });
+  });
+});
+
+const extraTitle=document.createElement("h2");
+extraTitle.textContent="أسئلة إضافية متنوعة";
+extraTitle.style.marginTop="28px";
+quiz.appendChild(extraTitle);
+
+extraQuestions.forEach((q,idx)=>{
+  const number=questions.length+idx+1;
+  const d=document.createElement("div"); d.className="q";
+  d.innerHTML=`<strong>${number}. ${q.text}</strong>`;
+
+  if(q.type==="tf"){
+    d.innerHTML+=`
+      <label class="opt"><input required type="radio" name="extra${idx}" value="true"> صواب</label>
+      <label class="opt"><input required type="radio" name="extra${idx}" value="false"> خطأ</label>`;
+  } else {
+    q.pairs.forEach((pair,p)=>{
+      const options = [...new Set(q.pairs.map(x=>x[1]))];
+      d.innerHTML+=`<div style="margin:12px 0">
+        <label><strong>${pair[0]}</strong></label>
+        <select required name="match${idx}_${p}" style="width:100%;margin-top:7px;padding:11px;border:1px solid #cfd6df;border-radius:10px;font-size:15px">
+          <option value="">اختاري الإجابة</option>
+          ${options.map((o,k)=>`<option value="${k}">${o}</option>`).join("")}
+        </select>
+      </div>`;
+    });
+  }
+  quiz.appendChild(d);
+  if(q.type==="tf"){
+    d.querySelectorAll(`input[name="extra${idx}"]`).forEach(input=>{
+      input.addEventListener("change",()=>{
+        const correctInput=d.querySelector(`input[name="extra${idx}"][value="${q.answer}"]`);
+        checkAndSound((input.value==="true")===q.answer, input, correctInput);
+      });
+    });
+  } else {
+    q.pairs.forEach((pair,p)=>{
+      const select=d.querySelector(`select[name="match${idx}_${p}"]`);
+      select.addEventListener("change",()=>{
+        if(select.value==="") return;
+        const options=[...new Set(q.pairs.map(x=>x[1]))];
+        checkAndSound(options[+select.value]===pair[1]);
+      });
+    });
+  }
+});
+
+quiz.addEventListener("submit",e=>{
+ e.preventDefault();
+ let score=0;
+ const total=questions.length + extraQuestions.length + extraQuestions.filter(q=>q.type==="match").reduce((s,q)=>s+q.pairs.length-1,0);
+
+ questions.forEach((q,i)=>{
+   const a=document.querySelector(`input[name="q${i}"]:checked`);
+   if(a && +a.value===q[2]) score++;
+ });
+
+ extraQuestions.forEach((q,idx)=>{
+   if(q.type==="tf"){
+     const a=document.querySelector(`input[name="extra${idx}"]:checked`);
+     if(a && (a.value==="true")===q.answer) score++;
+   } else {
+     q.pairs.forEach((pair,p)=>{
+       const select=document.querySelector(`select[name="match${idx}_${p}"]`);
+       const options=[...new Set(q.pairs.map(x=>x[1]))];
+       if(select && select.value!=="" && options[+select.value]===pair[1]) score++;
+     });
+   }
+ });
+
+ const name=document.getElementById("student").value.trim()||"الطالبة";
+ const pct=Math.round(score/total*100);
+ const r=document.getElementById("result");
+ r.style.display="block";
+ let advice="";
+ if(pct>=90) advice="ممتازة! مستواك قوي جدًا، واصلي المراجعة بنفس الطريقة.";
+ else if(pct>=75) advice="أداء جيد جدًا. راجعي الأسئلة التي أخطأتِ فيها لتثبيت المفاهيم.";
+ else if(pct>=60) advice="أداء مقبول. أعيدي مراجعة الخلية وعضياتها والمجهر ثم حاولي الاختبار مرة أخرى.";
+ else advice="تحتاجين إلى مراجعة الدرس بهدوء، خصوصًا المفاهيم التي أخطأتِ فيها، ثم إعادة الاختبار.";
+ r.innerHTML=`<div class="${pct>=60?'good':'bad'}">
+   <strong>${name}</strong><br>
+   <span style="font-size:14px">المعلمة: بهاء برهم</span><br>
+   النتيجة: ${score} من ${total}<br>${pct}%
+   <div style="margin-top:14px;padding:12px;border-radius:10px;background:#f5f7fb;color:#18202a;font-size:15px"><strong>نصيحة:</strong> ${advice}</div>
+ </div>`;
+ r.scrollIntoView({behavior:"smooth",block:"center"});
+});
+document.getElementById("reset").addEventListener("click",()=>location.reload());
+</script>
+</body>
+</html>
